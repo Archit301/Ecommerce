@@ -1,10 +1,57 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 
 const Search = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [isSearching, setIsSearching] = useState(false)
+  const [showMore, setShowMore] = useState(false);
+  useEffect(()=>{
+    const urlParams = new URLSearchParams(location.search);
+    const searchTermFromUrl = urlParams.get('searchTerm');
+    const typeFromUrl = urlParams.get('type');
+  const fetchTickets=async()=>{
+    setLoading(true);
+    setShowMore(false);
+    const searchQuery = urlParams.toString();
+    const res = await fetch(`/backend/product/get?${searchQuery}`);   
+    const data = await res.json();
+    if (data.length > 8) {
+      setShowMore(true);
+    } else {
+      setShowMore(false);
+    }
+    setResults(data);
+    setLoading(false);
+}
+fetchTickets()
+},[location.search])
+  
+// const handleClick=(ticketId)=>{
+//   console.log("hello")
+// navigate(`/viewticket/${ticketId}`)
+// }
+// const handleSubmit = (e) => {
+//     e.preventDefault();
+//     const urlParams = new URLSearchParams();
+//     const searchQuery = urlParams.toString();
+//     navigate(`/search?${searchQuery}`);
+//   };
+
+  // const onShowMoreClick = async () => {
+  //   const numberOfListings = tickets.length;
+  //   const startIndex = numberOfListings;
+  //   const urlParams = new URLSearchParams(location.search);
+  //   urlParams.set('startIndex', startIndex);
+  //   const searchQuery = urlParams.toString();
+  //   const res = await fetch(`/backend/product/get?${searchQuery}`);
+  //   const data = await res.json();
+  //   if (data.length < 9) {
+  //     setShowMore(false);
+  //   }
+  //   setResults([...tickets, ...data]);
+  // };
 
   // Dummy data for demonstration
   const data = [
@@ -30,7 +77,7 @@ const Search = () => {
   return (
     <div className="container mx-auto px-4 lg:px-8 py-12">
       {/* Search Form */}
-      <form onSubmit={handleSearch} className="flex items-center justify-center mb-8">
+      {/* <form onSubmit={handleSearch} className="flex items-center justify-center mb-8">
         <input
           type="text"
           value={query}
@@ -44,7 +91,7 @@ const Search = () => {
         >
           Search
         </button>
-      </form>
+      </form> */}
 
       {/* Search Results */}
       <div className="mt-6">

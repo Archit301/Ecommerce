@@ -1,19 +1,36 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import {FaSearch} from "react-icons/fa"
 
 const Header = () => {
   const {currentUser}= useSelector((state)=>state.user)
+  const [searchTerm, setSearchTerm] = useState('');
+  const navigate=useNavigate()
+  const handleSubmit=(e)=>{
+    e.preventDefault();
+    const urlParams=new URLSearchParams(window.location.search)
+    urlParams.set('searchTerm',searchTerm)
+    const searchQUery=urlParams.toString()
+    navigate(`/search?${searchQUery}`)
+  }
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const searchTermFromUrl = urlParams.get('searchTerm');
+    if (searchTermFromUrl) {
+      setSearchTerm(searchTermFromUrl);
+    }
+  }, [location.search]);
   const [countcart,setcount]=useState(0)
   useEffect(()=>{
     const count=async()=>{
      const res=await fetch(`/backend/cart/count/${currentUser._id}`)
      const data=await res.json()
      if(data)
-     setcount(data)
+     setcount(data.count)
     else
     setcount(0)
-  console.log(data.length())
+
     }
     count()
   },[currentUser])
@@ -38,13 +55,21 @@ const Header = () => {
         </nav>
 
         {/* Search Bar */}
-        <div className="relative flex-grow max-w-sm mx-4">
-          <input
-            type="text"
-            placeholder="Search for products..."
-            className="w-full px-4 py-2 rounded-full border border-gray-600 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-          />
-        </div>
+        <form className="relative flex-grow max-w-md mx-4" onSubmit={handleSubmit} >
+        <input
+          type="text"
+          placeholder="Search..."
+          className="w-full p-3 pl-12 rounded-lg border border-gray-300 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <button
+          type="submit"
+          className="absolute top-1/2 transform -translate-y-1/2 left-3 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 transition duration-300"
+        >
+          <FaSearch className="text-lg" />
+        </button>
+      </form>
 
         {/* User Account and Cart */}
         <div className="flex items-center space-x-6">

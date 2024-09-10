@@ -9,7 +9,7 @@ router.get('/getByUserId/:id',getByUserId)
 router.post('/getbuuserandproduct',getbuuserandproduct)
 router.post('/updateById/:id',updateById)
 router.post('/deleteById',deleteById)
-router.post('/count/:id',count)
+router.get('/count/:id',count)
 
 
 
